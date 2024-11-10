@@ -13,11 +13,17 @@ import { ExtendedEvent, ExtenedFighter } from '../types/extendedTypes';
 const http = rateLimit(axios.create(), { maxRequests: 100, perMilliseconds: 1000 })
 
 const collectData = async () => {
+  console.time(`DATA`);
   const events: string[] = await collectEventLinks();
   events.shift()
+  let i = 0
   for(const link of events){
+    console.time(`collectEventData - ${link} ${i}/${events.length}`);
     await collectEventData(link)
+    console.timeEnd(`collectEventData - ${link} ${i}/${events.length}`);
+    i++;
   }
+  console.timeEnd(`DATA`);
 }
 
 const collectEventLinks = async () => {
@@ -26,7 +32,6 @@ const collectEventLinks = async () => {
 };
 
 const collectEventData: (link: string) => Promise<Event> = async (link: string) => {
-  console.time(`collectEventData - ${link}`);
   const $ = await fetchHTML(link);
   const fights: Fight[] = []
   const data = {
@@ -48,7 +53,6 @@ const collectEventData: (link: string) => Promise<Event> = async (link: string) 
     fight.fighterTwo.id = fighterTwo.id
     const serialziedFight = serializeFightWithID(await createFight(fight, serializedEvent.id))
   }
-  console.timeEnd(`collectEventData - ${link}`);
   return {
     name: data.name,
     date: data.date,
@@ -114,13 +118,13 @@ const collectFight: ($row: cheerio.Cheerio) => Fight = ($row: cheerio.Cheerio) =
 const clean = (text: string) => text.trim().replace(/\s+/g, ' ');
 
 const fetchHTML = async (url: string) => {
-  console.time(`get - ${url}`);
-  // const response = await http.get(url);
-  const response = await fetch(url);
-  console.timeEnd(`get - ${url}`)
-  console.log('\n')
-  // const html = response.data;
-  const html = await response.text();
+  // console.time(`get - ${url}`);
+  const response = await http.get(url);
+  // const response = await fetch(url);
+  // console.timeEnd(`get - ${url}`)
+  // console.log('\n')
+  const html = response.data;
+  // const html = await response.text();
   const $ = cheerio.load(html);
   return $;
 };
