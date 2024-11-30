@@ -1,8 +1,11 @@
 import express from "express";
 import pool from "./db";
+import logging from "./middleware/logging";
 
 const app = express();
 const PORT = 3000;
+
+app.use(logging)
 
 app.get("/", (req, res) => {
   res.send("Working");
