@@ -1,13 +1,93 @@
 import { Fighter } from "../types/types";
 
-export const serializeFighter = (row: any): Fighter => {
+export class FighterSerializer {
+  private data: Partial<Fighter>; // Partial allows flexibility before validation
+  private instance: Fighter | null = null;
+
+  constructor(data: any) {
+    this.data = data;
+  }
+
+  validate(): void {
+    const { name, height, weight, reach, stance, dob, nickname } = this.data;
+
+    if (!name || typeof name !== 'string') {
+      throw new Error("Name is required and must be a string.");
+    }
+
+    if (!height || typeof height !== 'number' || height <= 0) {
+      throw new Error("Height is required and must be a positive number.");
+    }
+
+    if (!weight || typeof weight !== 'number' || weight <= 0) {
+      throw new Error("Weight is required and must be a positive number.");
+    }
+
+    if (!reach || typeof reach !== 'number' || reach <= 0) {
+      throw new Error("Reach is required and must be a positive number.");
+    }
+
+    if (!stance || typeof stance !== 'string') {
+      throw new Error("Stance is required and must be a string.");
+    }
+
+    if (!dob || !this.isValidDate(dob)) {
+      throw new Error("DOB must be a valid date.");
+    }
+
+    if (nickname !== undefined && typeof nickname !== 'string') {
+      throw new Error("Nickname must be a string if provided.");
+    }
+
+    this.instance = {
+      name,
+      nickname: nickname || null,
+      height,
+      weight,
+      reach,
+      stance,
+      dob,
+    };
+  }
+
+  toInstance(): Fighter {
+    if (!this.instance) {
+      throw new Error("Data has not been validated yet.");
+    }
+    return this.instance;
+  }
+
+
+  private isValidDate(date: string): boolean {
+    const parsedDate = Date.parse(date);
+    return !isNaN(parsedDate);
+  }
+
+  toDatabaseObject(): any {
+    const instance = this.toInstance();
+    return {
+      name: instance.name,
+      nickname: instance.nickname,
+      height: instance.height,
+      weight: instance.weight,
+      reach: instance.reach,
+      stance: instance.stance,
+      dob: instance.dob,
+    };
+  }
+}
+
+export const serializeFighter: (row: any) => Fighter = (row: any): Fighter => {
+  if (!row) {
+    throw new Error("Row data cannot be null or undefined.");
+  }
   return {
     name: row.name,
-    nickname: row.nickname,
+    nickname: row.nickname || null,
     height: row.height,
     weight: row.weight,
     reach: row.reach,
     stance: row.stance,
     dob: row.dob,
-  }
+  };
 }

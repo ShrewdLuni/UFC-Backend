@@ -44,7 +44,7 @@ export interface Fight {
 
 export interface Fighter {
   name: string;
-  nickname: string;
+  nickname: string | null;
   height: string;
   weight: string;
   reach: string;
