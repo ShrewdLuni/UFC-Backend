@@ -7,36 +7,12 @@ export interface Event {
 
 export interface Fight {
   winner: string;
-  fighters: {
-    one: {
-      name: string;
-      link: string;
-    };
-    two:{
-      name: string;
-      link: string;
-    };
-  };
-  KD: {
-    one: string;
-    two: string;
-  };
-  STR: {
-    one: string;
-    two: string;
-  };
-  TD: {
-    one: string;
-    two: string;
-  };
-  SUB: {
-    one: string;
-    two: string;
-  };
+  fighterOne: FighterFightData;
+  fighterTwo: FighterFightData;
   weightClass: string;
   method: {
     name: string;
-    details: string;
+    details?: string;
   }
   round: string;
   time: string;
@@ -45,9 +21,15 @@ export interface Fight {
 export interface Fighter {
   name: string;
   nickname: string | null;
-  height: string;
-  weight: string;
-  reach: string;
+  height: number;
+  weight: number;
+  reach: number;
   stance: string;
   dob: string;
 };
+
+
+export interface FighterFightData {
+  name: string;
+  link?: string;
+}
