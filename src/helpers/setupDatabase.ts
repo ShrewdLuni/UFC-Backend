@@ -25,7 +25,6 @@ const setupDatabase = async () => {
         dob DATE
       );
     
-      -- Add the foreign key constraint for fighter_id after creating both tables
       ALTER TABLE elo 
       ADD CONSTRAINT elo_fighter_id_fkey 
       FOREIGN KEY (fighter_id) REFERENCES fighter(id) ON DELETE CASCADE;
@@ -48,8 +47,7 @@ const setupDatabase = async () => {
         method_details TEXT,
         weight_class TEXT NOT NULL,
         round INTEGER,
-        time TIME,
-        stats JSONB
+        time TIME
       );
     `);
       
