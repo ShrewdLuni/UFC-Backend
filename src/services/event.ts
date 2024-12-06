@@ -13,7 +13,6 @@ export const getEventById = async (id: number): Promise<Event | null> => {
 }
 
 export const createEvent = async (data: any): Promise<Event | null> => {
-
   const currentEvent = new EventSerializer(data)
   currentEvent.validate()
   const values = currentEvent.toDatabaseObject()

@@ -1,3 +1,4 @@
+import { DatabaseFighter } from "../types/databaseTypes";
 import { Fighter } from "../types/types";
 
 export class FighterSerializer {
@@ -50,6 +51,11 @@ export class FighterSerializer {
     };
   }
 
+  private isValidDate(date: string): boolean {
+    const parsedDate = Date.parse(date);
+    return !isNaN(parsedDate);
+  }
+
   toInstance(): Fighter {
     if (!this.instance) {
       throw new Error("Data has not been validated yet.");
@@ -57,12 +63,7 @@ export class FighterSerializer {
     return this.instance;
   }
 
-  private isValidDate(date: string): boolean {
-    const parsedDate = Date.parse(date);
-    return !isNaN(parsedDate);
-  }
-
-  toDatabaseObject(): any {
+  toDatabaseObject(): DatabaseFighter {
     const instance = this.toInstance();
     return {
       name: instance.name,

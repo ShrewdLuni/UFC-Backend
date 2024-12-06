@@ -1,5 +1,5 @@
 import pool from "../db";
-import { serializeFighter } from "../serializers/fighter";
+import { FighterSerializer, serializeFighter } from "../serializers/fighter";
 import { Fighter } from "../types/types";
 
 export const getFighters = async (): Promise<Fighter[]> => {
@@ -13,6 +13,10 @@ export const getFighterById = async (id: number): Promise<Fighter | null> => {
 }
 
 export const createFighter = async (data: Fighter): Promise<Fighter | null> => {
+  const currentFighter = new FighterSerializer(data)
+  currentFighter.validate()
+  const values = currentFighter.toDatabaseObject()
+
   const result = await pool.query(`INSERT INTO fighter (
     name, 
     nickname, 
@@ -23,11 +27,15 @@ export const createFighter = async (data: Fighter): Promise<Fighter | null> => {
     dob) 
     VALUES ($1, $2, $3, $4, $5, $6, $7) 
     RETURNING *`, 
-    [data.name, data.nickname, data.height, data.weight, data.reach, data.stance, data.dob])
+    [values.name, values.nickname, values.height, values.weight, values.reach, values.stance, values.dob])
   return result.rows.length ? serializeFighter(result.rows[0]) : null
 }
 
 export const updateFighterById = async (id: number, data: Fighter): Promise<Fighter | null> => {
+  const currentFighter = new FighterSerializer(data)
+  currentFighter.validate()
+  const values = currentFighter.toDatabaseObject()
+
   const result = await pool.query(`UPDATE fighter SET 
     name = $2, 
     nickname = $3, 
@@ -38,7 +46,7 @@ export const updateFighterById = async (id: number, data: Fighter): Promise<Figh
     dob = $8 WHERE 
     id = $1 
     RETURNING *`, 
-    [id, data.name, data.nickname, data.height, data.weight, data.reach, data.stance, data.dob]);
+    [id, values.name, values.nickname, values.height, values.weight, values.reach, values.stance, values.dob]);
   return result.rows.length ? serializeFighter(result.rows[0]) : null
 }
 
