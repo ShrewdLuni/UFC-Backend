@@ -23,15 +23,11 @@ export class EventSerializer {
       throw new Error("Location field is required and must be a string.") 
     }
 
-    if(!fights){
-      throw new Error("Fights field can not be null.") 
-    }
-
     this.instance = {
       name,
       date,
       location,
-      fights
+      fights: fights || [],
     };
   }
 
@@ -53,7 +49,6 @@ export class EventSerializer {
       name: instance.name,
       date: instance.date,
       location: instance.location,
-      fights: instance.fights
     };
   }
 }
