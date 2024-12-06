@@ -14,7 +14,7 @@ export interface Fight {
     name: string;
     details?: string;
   }
-  round: string;
+  round: number;
   time: string;
 };
 
