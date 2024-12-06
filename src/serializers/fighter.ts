@@ -1,7 +1,7 @@
 import { Fighter } from "../types/types";
 
 export class FighterSerializer {
-  private data: Partial<Fighter>; // Partial allows flexibility before validation
+  private data: Partial<Fighter>;
   private instance: Fighter | null = null;
 
   constructor(data: any) {
@@ -12,31 +12,31 @@ export class FighterSerializer {
     const { name, height, weight, reach, stance, dob, nickname } = this.data;
 
     if (!name || typeof name !== 'string') {
-      throw new Error("Name is required and must be a string.");
+      throw new Error("Name field is required and must be a string.");
     }
 
     if (!height || typeof height !== 'number' || height <= 0) {
-      throw new Error("Height is required and must be a positive number.");
+      throw new Error("Height field is required and must be a positive number.");
     }
 
     if (!weight || typeof weight !== 'number' || weight <= 0) {
-      throw new Error("Weight is required and must be a positive number.");
+      throw new Error("Weight field is required and must be a positive number.");
     }
 
     if (!reach || typeof reach !== 'number' || reach <= 0) {
-      throw new Error("Reach is required and must be a positive number.");
+      throw new Error("Reach field is required and must be a positive number.");
     }
 
     if (!stance || typeof stance !== 'string') {
-      throw new Error("Stance is required and must be a string.");
+      throw new Error("Stance field is required and must be a string.");
     }
 
     if (!dob || !this.isValidDate(dob)) {
-      throw new Error("DOB must be a valid date.");
+      throw new Error("DOB field must be a valid date.");
     }
 
     if (nickname !== undefined && typeof nickname !== 'string') {
-      throw new Error("Nickname must be a string if provided.");
+      throw new Error("Nickname field must be a string if provided.");
     }
 
     this.instance = {
@@ -56,7 +56,6 @@ export class FighterSerializer {
     }
     return this.instance;
   }
-
 
   private isValidDate(date: string): boolean {
     const parsedDate = Date.parse(date);

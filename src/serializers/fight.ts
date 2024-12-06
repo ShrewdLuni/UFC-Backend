@@ -1,6 +1,6 @@
 import { Fight } from "../types/types";
 
-export class FighterSerializer {
+export class FightSerializer {
   private data: Partial<Fight>;
   private instance: Fight | null = null;
 
@@ -12,7 +12,7 @@ export class FighterSerializer {
     const { winner, fighterOne, fighterTwo, weightClass, method, round, time } = this.data;
 
     if (!winner || typeof winner !== "string") {
-      throw new Error("Winner is required and must be a string.");
+      throw new Error("Winner field is required and must be a string.");
     }
 
     if (!fighterOne || !fighterTwo) {
@@ -21,27 +21,27 @@ export class FighterSerializer {
     }
 
     if (!weightClass || typeof weightClass !== "string") {
-      throw new Error("Weight Class is required and must be a string.");
+      throw new Error("Weight Class field is required and must be a string.");
     }
 
     if (!method) {
-      throw new Error("Method is required")
+      throw new Error("Method field is required")
     }
 
     if (!method.name || typeof method.name !== "string") {
-      throw new Error("Weight Class is required and must be a string.")
+      throw new Error("Method Name field is required and must be a string.")
     }
 
-    if(typeof method.details !== "string" && method.details !== null) {
-      throw new Error("Method Details is must be a string.") 
+    if(method.details !== undefined && method.details) {
+      throw new Error("Method Details field must be a string if provided.") 
     }
 
     if(!round || typeof round === "number"){
-      throw new Error("Round must be a positive number.") 
+      throw new Error("Round field must be a positive number.") 
     }
 
     if (!time || typeof time !== "string") {
-      throw new Error("time is required and must be a string.")
+      throw new Error("Time field is required and must be a string.")
     }
 
     this.instance = {
@@ -60,12 +60,6 @@ export class FighterSerializer {
       throw new Error("Data has not been validated yet.");
     }
     return this.instance;
-  }
-
-
-  private isValidDate(date: string): boolean {
-    const parsedDate = Date.parse(date);
-    return !isNaN(parsedDate);
   }
 
   toDatabaseObject(): any {
