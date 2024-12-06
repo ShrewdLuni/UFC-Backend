@@ -8,7 +8,8 @@
     "build": "tsc",
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "collectData": "ts-node src/helpers/collectData.ts",
-    "setupDatabase": "ts-node src/helpers/setupDatabase.ts"
+    "setupDatabase": "ts-node src/helpers/setupDatabase.ts",
+    "dropDatabase": "ts-node src/helpers/dropDatabase.ts"
   },
   "keywords": [],
   "author": "",
