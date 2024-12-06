@@ -1,3 +1,4 @@
+import { DatabaseEvent } from "../types/databaseTypes";
 import { Event } from "../types/types";
 
 export class EventSerializer {
@@ -30,6 +31,11 @@ export class EventSerializer {
       fights: fights || [],
     };
   }
+  
+  private isValidDate(date: string): boolean {
+    const parsedDate = Date.parse(date);
+    return !isNaN(parsedDate);
+  }
 
   toInstance(): Event {
     if (!this.instance) {
@@ -38,12 +44,7 @@ export class EventSerializer {
     return this.instance;
   }
 
-  private isValidDate(date: string): boolean {
-    const parsedDate = Date.parse(date);
-    return !isNaN(parsedDate);
-  }
-
-  toDatabaseObject(): any {
+  toDatabaseObject(): DatabaseEvent {
     const instance = this.toInstance();
     return {
       name: instance.name,

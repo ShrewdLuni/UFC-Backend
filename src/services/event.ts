@@ -13,9 +13,11 @@ export const getEventById = async (id: number): Promise<Event | null> => {
 }
 
 export const createEvent = async (data: any): Promise<Event | null> => {
+
   const currentEvent = new EventSerializer(data)
   currentEvent.validate()
   const values = currentEvent.toDatabaseObject()
+
   const result = await pool.query(`INSERT INTO event (
     name,
     location,
@@ -27,6 +29,10 @@ export const createEvent = async (data: any): Promise<Event | null> => {
 }
 
 export const updateEventById = async (id: number, data: any): Promise<Event | null> => {
+  const currentEvent = new EventSerializer(data)
+  currentEvent.validate()
+  const values = currentEvent.toDatabaseObject()
+
   const result = await pool.query(`UPDATE event SET 
     name = $2, 
     location = $3, 
@@ -34,7 +40,7 @@ export const updateEventById = async (id: number, data: any): Promise<Event | nu
     WHERE 
     id = $1 
     RETURNING *`, 
-    [id, data.name, data.location, data.date]);
+    [id, values.name, values.location, values.date]);
   return result.rows.length ? serializeEvent(result.rows[0]) : null
 }
 
