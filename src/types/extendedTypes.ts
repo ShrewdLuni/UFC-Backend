@@ -1,10 +1,12 @@
-export interface DatabaseEvent {
+export interface ExtendedEvent {
+  id: number
   name: string;
   date: string;
   location: string;
 };
 
-export interface DatabaseFight {
+export interface ExtenedFight {
+  id: number;
   eventId: number;
   winner: string;
   fighterOneId: number;
@@ -17,7 +19,8 @@ export interface DatabaseFight {
   time: string;
 };
 
-export interface DatabaseFighter {
+export interface ExtenedFighter {
+  id: number;
   name: string;
   nickname?: string | null;
   height: number;

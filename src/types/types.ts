@@ -20,7 +20,7 @@ export interface Fight {
 
 export interface Fighter {
   name: string;
-  nickname: string | null;
+  nickname?: string | null;
   height: number;
   weight: number;
   reach: number;
@@ -29,7 +29,8 @@ export interface Fighter {
 };
 
 
-export interface FighterFightData {
+interface FighterFightData {
   name: string;
   link?: string;
+  id?: number;
 }
