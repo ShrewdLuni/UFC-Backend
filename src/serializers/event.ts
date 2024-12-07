@@ -1,4 +1,5 @@
 import { DatabaseEvent } from "../types/databaseTypes";
+import { ExtendedEvent } from "../types/extendedTypes";
 import { Event } from "../types/types";
 
 export class EventSerializer {
@@ -63,5 +64,17 @@ export const serializeEvent: (row: any) => Event = (row: any): Event => {
     date: row.date,
     location: row.location,
     fights: row.fights
+  };
+}
+
+export const serializeEventWithID: (row: any) => ExtendedEvent = (row: any): ExtendedEvent => {
+  if (!row) {
+    throw new Error("Row data cannot be null or undefined.");
+  }
+  return {
+    id: row.id,
+    name: row.name,
+    date: row.date,
+    location: row.location,
   };
 }

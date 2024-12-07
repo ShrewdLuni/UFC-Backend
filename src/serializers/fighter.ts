@@ -1,4 +1,5 @@
 import { DatabaseFighter } from "../types/databaseTypes";
+import { ExtenedFighter } from "../types/extendedTypes";
 import { Fighter } from "../types/types";
 
 export class FighterSerializer {
@@ -82,6 +83,22 @@ export const serializeFighter: (row: any) => Fighter = (row: any): Fighter => {
     throw new Error("Row data cannot be null or undefined.");
   }
   return {
+    name: row.name,
+    nickname: row.nickname || null,
+    height: row.height,
+    weight: row.weight,
+    reach: row.reach,
+    stance: row.stance,
+    dob: row.dob,
+  };
+}
+
+export const serializeFighterWithID: (row: any) => ExtenedFighter = (row: any): ExtenedFighter => {
+  if (!row) {
+    throw new Error("Row data cannot be null or undefined.");
+  }
+  return {
+    id: row.id,
     name: row.name,
     nickname: row.nickname || null,
     height: row.height,
