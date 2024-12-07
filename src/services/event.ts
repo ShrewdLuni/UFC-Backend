@@ -1,15 +1,15 @@
 import pool from "../db";
-import { EventSerializer, serializeEvent } from "../serializers/event";
+import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
 export const getEvents = async (): Promise<Event[]> => {
   const result = await pool.query("SELECT * FROM event");
-  return result.rows.map(serializeEvent)
+  return result.rows
 }
 
 export const getEventById = async (id: number): Promise<Event | null> => {
   const result = await pool.query("SELECT * FROM event WHERE id = $1", [id]);
-  return result.rows.length ? serializeEvent(result.rows[0]) : null
+  return result.rows.length ? result.rows[0] : null
 }
 
 export const createEvent = async (data: any): Promise<Event | null> => {
@@ -24,7 +24,7 @@ export const createEvent = async (data: any): Promise<Event | null> => {
     VALUES ($1, $2, $3) 
     RETURNING *`, 
     [values.name, values.location, values.date])
-  return result.rows.length ? serializeEvent(result.rows[0]) : null
+  return result.rows.length ? result.rows[0] : null
 }
 
 export const updateEventById = async (id: number, data: any): Promise<Event | null> => {
@@ -40,10 +40,10 @@ export const updateEventById = async (id: number, data: any): Promise<Event | nu
     id = $1 
     RETURNING *`, 
     [id, values.name, values.location, values.date]);
-  return result.rows.length ? serializeEvent(result.rows[0]) : null
+  return result.rows.length ? result.rows[0] : null
 }
 
 export const deleteEventById = async (id: number): Promise<Event | null> => {
   const result = await pool.query("DELETE FROM event WHERE id = $1 RETURNING *", [id])
-  return result.rows.length ? serializeEvent(result.rows[0]) : null
+  return result.rows.length ? result.rows[0] : null
 }
