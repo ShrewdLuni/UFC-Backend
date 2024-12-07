@@ -29,3 +29,12 @@ export interface ExtenedFighter {
   stance: string;
   dob: string;
 };
+
+export interface ExtendedElo {
+  id: number;
+  fighterId: number;
+  type: string;
+  weightClass: string;
+  date: string;
+  value: number;
+}

@@ -28,7 +28,6 @@ export interface Fighter {
   dob: string;
 };
 
-
 interface FighterFightData {
   name: string;
   link?: string;

@@ -26,3 +26,11 @@ export interface DatabaseFighter {
   stance: string;
   dob: string;
 };
+
+export interface DatabaseElo {
+  fighterId: number;
+  type: string;
+  weightClass: string;
+  date: string;
+  value: number;
+}
