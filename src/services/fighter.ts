@@ -21,11 +21,12 @@ export const getFighterByUniqueFields = async (name: string, dob: string) => {
 };
 
 export const createFighter = async (data: Fighter): Promise<Fighter | null> => {
-  const currentFighter = new FighterSerializer(data)
-  currentFighter.validate()
-  const values = currentFighter.toDatabaseObject()
+  const currentFighter = new FighterSerializer(data);
+  currentFighter.validate();
+  const values = currentFighter.toDatabaseObject();
 
-  const result = await pool.query(`INSERT INTO fighter (
+  const result = await pool.query(
+    `INSERT INTO fighter (
       name, 
       nickname, 
       height, 
@@ -34,16 +35,13 @@ export const createFighter = async (data: Fighter): Promise<Fighter | null> => {
       stance, 
       dob
     ) 
-    SELECT $1, $2, $3, $4, $5, $6, $7
-    WHERE NOT EXISTS (
-      SELECT 1
-      FROM fighter
-      WHERE name = $1 AND dob = $7
-    )
-    RETURNING *;`, 
-    [values.name, values.nickname, values.height, values.weight, values.reach, values.stance, values.dob])
-  return result.rows.length ? result.rows[0] : null
-}
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *;`,
+    [values.name, values.nickname, values.height, values.weight, values.reach, values.stance, values.dob]
+  );
+
+  return result.rows[0];
+};
 
 export const updateFighterById = async (id: number, data: Fighter): Promise<Fighter | null> => {
   const currentFighter = new FighterSerializer(data)
