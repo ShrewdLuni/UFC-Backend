@@ -26,6 +26,7 @@ const collectEventLinks = async () => {
 };
 
 const collectEventData: (link: string) => Promise<Event> = async (link: string) => {
+  console.time(`collectEventData - ${link}`);
   const $ = await fetchHTML(link);
   const fights: Fight[] = []
   const data = {
@@ -45,10 +46,9 @@ const collectEventData: (link: string) => Promise<Event> = async (link: string) 
 
     const fighterTwo = await collectFighter(fight.fighterTwo.link!)
     fight.fighterTwo.id = fighterTwo.id
-
     const serialziedFight = serializeFightWithID(await createFight(fight, serializedEvent.id))
   }
-
+  console.timeEnd(`collectEventData - ${link}`);
   return {
     name: data.name,
     date: data.date,
@@ -57,14 +57,19 @@ const collectEventData: (link: string) => Promise<Event> = async (link: string) 
   }
 };
 
+const fighterCache = new Map<string, ExtenedFighter>();
+
 const collectFighter = async (link: string): Promise<ExtenedFighter> => {
+  if (fighterCache.has(link)) {
+    return fighterCache.get(link)!;
+  }
   const $ = await fetchHTML(link);
   const [height, weight, reach, stance, dob] = $("body > section > div > div > div.b-list__info-box.b-list__info-box_style_small-width.js-guide > ul > li").map((_, listItem) => clean($(listItem).text().split(":")[1])).get();
   const name = clean($("body > section > div > h2 > span.b-content__title-highlight").text())
   const nickname = clean($("body > section > div > p").text())
-  
-  const heightInInches = (height: string) => height.split("'").map(val => parseInt(val.replace('"', ''), 10)).reduce((acc, curr, index) => acc + (index === 0 ? curr * 12 : curr), 0);
 
+
+  const heightInInches = (height: string) => height.split("'").map(val => parseInt(val.replace('"', ''), 10)).reduce((acc, curr, index) => acc + (index === 0 ? curr * 12 : curr), 0);
   const data: Fighter = {
     name,
     nickname,
@@ -75,10 +80,10 @@ const collectFighter = async (link: string): Promise<ExtenedFighter> => {
     dob
   }
   const existingFighter = await getFighterByUniqueFields(name, dob)
-  if(existingFighter){
-    return serializeFighterWithID(existingFighter)
-  }
-  const serializedFighter = serializeFighterWithID(await createFighter(data))
+  const serializedFighter = existingFighter
+  ? serializeFighterWithID(existingFighter)
+  : serializeFighterWithID(await createFighter(data));
+  fighterCache.set(link, serializedFighter);
   return serializedFighter;
 };
 
@@ -109,8 +114,13 @@ const collectFight: ($row: cheerio.Cheerio) => Fight = ($row: cheerio.Cheerio) =
 const clean = (text: string) => text.trim().replace(/\s+/g, ' ');
 
 const fetchHTML = async (url: string) => {
-  const response = await http.get(url);
-  const html = response.data;
+  console.time(`get - ${url}`);
+  // const response = await http.get(url);
+  const response = await fetch(url);
+  console.timeEnd(`get - ${url}`)
+  console.log('\n')
+  // const html = response.data;
+  const html = await response.text();
   const $ = cheerio.load(html);
   return $;
 };
