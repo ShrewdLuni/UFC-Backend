@@ -19,6 +19,21 @@ export interface ExtenedFight {
   time: string;
 };
 
+export interface FightForEloCalculation {
+  id: number;
+  eventId: number;
+  winner: string;
+  fighterOneId: number;
+  fighterTwoId: number;
+  winnerId: number;
+  weightClass: string;
+  methodName: string;
+  methodDetails?: string | null;
+  round: number;
+  time: string;
+  date: string;
+}
+
 export interface ExtenedFighter {
   id: number;
   name: string;

@@ -70,9 +70,9 @@ export const serializeElo: (row: any) => DatabaseElo = (row: any): DatabaseElo =
     throw new Error("Row data cannot be null or undefined.");
   }
   return {
-    fighterId: row.fighterId,
+    fighterId: row.fighter_id,
     type: row.type,
-    weightClass: row.weightClass,
+    weightClass: row.weight_class,
     date: row.date,
     value: row.value,
   };

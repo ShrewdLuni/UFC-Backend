@@ -1,5 +1,5 @@
 import { DatabaseFight } from "../types/databaseTypes";
-import { ExtenedFight } from "../types/extendedTypes";
+import { ExtenedFight, FightForEloCalculation } from "../types/extendedTypes";
 import { Fight } from "../types/types";
 
 export class FightSerializer {
@@ -118,5 +118,25 @@ export const serializeFightWithID: (row: any) => ExtenedFight = (row: any): Exte
     weightClass: row.weight_class,
     round: row.round,
     time: row.time,
+  };
+}
+
+export const serializeFightForEloCalculation: (row: any) => FightForEloCalculation = (row: any): FightForEloCalculation => {
+  if (!row) {
+    throw new Error("Row data cannot be null or undefined.");
+  }
+  return {
+    id: row.id,
+    eventId: row.event_id,
+    fighterOneId: row.fighter_one_id,
+    fighterTwoId: row.fighter_two_id,
+    winner: row.result,
+    winnerId: row.winner_id,
+    methodName: row.method,
+    methodDetails: row.method_details,
+    weightClass: row.weight_class,
+    round: row.round,
+    time: row.time,
+    date: row.event_date,
   };
 }
