@@ -7,6 +7,17 @@ export const getEloById = async (id: number): Promise<ExtendedElo | null> => {
   return result.rows.length ? result.rows[0] : null
 }
 
+export const getLatestEloByFighterId = async (fighterId: number): Promise<ExtendedElo | null> => {
+  const result = await pool.query(`
+    SELECT *
+    FROM elo
+    WHERE fighter_id = $1
+    ORDER BY date DESC
+    LIMIT 1;
+  `, [fighterId]);
+  return result.rows[0] || null;
+};
+
 export const createElo = async (data: any): Promise<ExtendedElo | null> => {
   const currentElo = new EloSerializer(data)
   currentElo.validate()
@@ -20,7 +31,7 @@ export const createElo = async (data: any): Promise<ExtendedElo | null> => {
     value)
     VALUES ($1, $2, $3, $4, $5) 
     RETURNING *`, 
-    [values.fighterId, values.type, values.weightClass, values.date, values.date])
+    [values.fighterId, values.type, values.weightClass, values.date, values.value])
   return result.rows.length ? result.rows[0] : null
 }
 

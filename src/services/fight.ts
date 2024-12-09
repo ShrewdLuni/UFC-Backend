@@ -2,10 +2,19 @@ import pool from "../db"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
-export const getFight = async () => {
+export const getFights = async () => {
   const result = await pool.query("SELECT * FROM fight")
   return result.rows
 }
+
+export const getAllFightsWithEventDates = async () => {
+  const result = await pool.query(`
+    SELECT fight.*, event.date AS event_date
+    FROM fight
+    JOIN event ON fight.event_id = event.id;
+  `);
+  return result.rows;
+};
 
 export const getFightById = async (id: number): Promise<Fight | null> => {
   const result = await pool.query("SELECT * FROM fight WHERE id = $1", [id]);
