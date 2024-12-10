@@ -18,7 +18,7 @@ export class EloRatingCalculator {
     return roundTo(1 / (1 + 10 ** ((opponentRating - playerRating) / 400)), 4);
   }
 
-  public calculateRatingDelta(playerRating: number, opponentRating: number, realScore: number, isKO: boolean = false): number {
+  public calculateRatingDelta(playerRating: number, opponentRating: number, isKO: boolean = false, realScore: number = 1): number {
     const expectedScore = this.calculateExpectedScore(playerRating, opponentRating);
     const delta = roundTo(this.K * (realScore - expectedScore), 2);
     if(isKO) {

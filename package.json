@@ -9,7 +9,8 @@
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "collectData": "ts-node src/helpers/collectData.ts",
     "setupDatabase": "ts-node src/helpers/setupDatabase.ts",
-    "dropDatabase": "ts-node src/helpers/dropDatabase.ts"
+    "dropDatabase": "ts-node src/helpers/dropDatabase.ts",
+    "elo": "ts-node src/helpers/calculateElo.ts"
   },
   "keywords": [],
   "author": "",

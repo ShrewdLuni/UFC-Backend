@@ -6,10 +6,8 @@ import { serializeElo } from "../serializers/elo";
 import { DatabaseElo } from "../types/databaseTypes";
 
 const calculateElo = async () => {
-  const eloEngine = new EloRatingCalculator()
-
+  const eloEngine = new EloRatingCalculator(200)
   const fights = (await getAllFightsWithEventDates()).map(serializeFightForEloCalculation)
-  let i = 0
   for(const fight of fights) {
     let rawRatingA = await getLatestEloByFighterId(fight.fighterOneId)
     let rawRatingB = await getLatestEloByFighterId(fight.fighterTwoId)
@@ -38,8 +36,7 @@ const calculateElo = async () => {
     const ratingB = serializeElo(rawRatingB)
 
     const isKo: boolean = fight.methodName == "KO/TKO" || fight.methodName == "SUB"
-    const delta = eloEngine.calculateRatingDelta(ratingA.value, ratingB.value, 1, isKo)
-
+    const delta = eloEngine.calculateRatingDelta(ratingA.value, ratingB.value, isKo)
     ratingA.value = ratingA.value + delta;
     ratingA.date = fight.date
 

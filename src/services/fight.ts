@@ -11,7 +11,8 @@ export const getAllFightsWithEventDates = async () => {
   const result = await pool.query(`
     SELECT fight.*, event.date AS event_date
     FROM fight
-    JOIN event ON fight.event_id = event.id;
+    JOIN event ON fight.event_id = event.id
+    ORDER BY event.date ASC;
   `);
   return result.rows;
 };
