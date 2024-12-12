@@ -1,13 +1,11 @@
 import { DatabaseFight } from "../types/databaseTypes";
 import { ExtenedFight, FightForEloCalculation } from "../types/extendedTypes";
 import { Fight } from "../types/types";
+import { Serializer } from "../abstract/serializer";
 
-export class FightSerializer {
-  private data: Partial<Fight>;
-  private instance: Fight | null = null;
-
+export class FightSerializer extends Serializer<Fight, DatabaseFight> {
   constructor(data: any) {
-    this.data = data;
+    super(data)
   }
 
   validate(): void {
@@ -61,13 +59,6 @@ export class FightSerializer {
       round,
       time
     };
-  }
-
-  toInstance(): Fight {
-    if (!this.instance) {
-      throw new Error("Data has not been validated yet.");
-    }
-    return this.instance;
   }
 
   toDatabaseObject(): DatabaseFight {

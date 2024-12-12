@@ -1,13 +1,12 @@
+import { isValidDate } from "../helpers/utils";
 import { DatabaseFighter } from "../types/databaseTypes";
 import { ExtenedFighter } from "../types/extendedTypes";
 import { Fighter } from "../types/types";
+import { Serializer } from "../abstract/serializer";
 
-export class FighterSerializer {
-  private data: Partial<Fighter>;
-  private instance: Fighter | null = null;
-
+export class FighterSerializer extends Serializer<Fighter, DatabaseFighter>{
   constructor(data: any) {
-    this.data = data;
+    super(data)
   }
 
   validate(): void {
@@ -25,15 +24,15 @@ export class FighterSerializer {
       throw new Error("Weight field is required and must be a positive number.");
     }
 
-    if (!reach || typeof reach !== 'number' || reach <= 0) {
-      throw new Error("Reach field is required and must be a positive number.");
+    if (reach !== undefined && (typeof reach !== 'number' || reach <= 0)) {
+      throw new Error("Reach field must be a positive number if provided.");
     }
 
-    if (!stance || typeof stance !== 'string') {
-      throw new Error("Stance field is required and must be a string.");
+    if (stance !== undefined && typeof stance !== 'string') {
+      throw new Error("Stance field must be a string if provided.");
     }
 
-    if (!dob || !this.isValidDate(dob)) {
+    if (!dob || !isValidDate(dob)) {
       throw new Error("DOB field must be a valid date.");
     }
 
@@ -46,22 +45,10 @@ export class FighterSerializer {
       nickname: nickname || null,
       height,
       weight,
-      reach,
-      stance,
+      reach: reach || 0,
+      stance: stance || "No info",
       dob,
     };
-  }
-
-  private isValidDate(date: string): boolean {
-    const parsedDate = Date.parse(date);
-    return !isNaN(parsedDate);
-  }
-
-  toInstance(): Fighter {
-    if (!this.instance) {
-      throw new Error("Data has not been validated yet.");
-    }
-    return this.instance;
   }
 
   toDatabaseObject(): DatabaseFighter {

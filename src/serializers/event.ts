@@ -1,13 +1,12 @@
+import { isValidDate } from "../helpers/utils";
 import { DatabaseEvent } from "../types/databaseTypes";
 import { ExtendedEvent } from "../types/extendedTypes";
 import { Event } from "../types/types";
+import { Serializer } from "../abstract/serializer";
 
-export class EventSerializer {
-  private data: Partial<Event>;
-  private instance: Event | null = null;
-
+export class EventSerializer extends Serializer<Event, DatabaseEvent> {
   constructor(data: any) {
-    this.data = data;
+    super(data)
   }
 
   validate(): void {
@@ -17,7 +16,7 @@ export class EventSerializer {
       throw new Error("Name field is required and must be a string.");
     }
 
-    if (!date || !this.isValidDate(date)) {
+    if (!date || !isValidDate(date)) {
       throw new Error("Date field is required and must be a string.");
     }
 
@@ -31,18 +30,6 @@ export class EventSerializer {
       location,
       fights: fights || [],
     };
-  }
-  
-  private isValidDate(date: string): boolean {
-    const parsedDate = Date.parse(date);
-    return !isNaN(parsedDate);
-  }
-
-  toInstance(): Event {
-    if (!this.instance) {
-      throw new Error("Data has not been validated yet.");
-    }
-    return this.instance;
   }
 
   toDatabaseObject(): DatabaseEvent {

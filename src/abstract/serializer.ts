@@ -1,6 +1,6 @@
-abstract class Serializer<T, DB> {
-  private data: Partial<T>;
-  private instance: T | null = null;
+export abstract class Serializer<T, DB = T> {
+  protected data: Partial<T>;
+  protected instance: T | null = null;
 
   constructor(data: Partial<T>) {
     this.data = data;

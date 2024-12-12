@@ -1,12 +1,11 @@
+import { isValidDate } from "../helpers/utils";
 import { DatabaseElo } from "../types/databaseTypes";
 import { ExtendedElo } from "../types/extendedTypes";
+import { Serializer } from "../abstract/serializer";
 
-export class EloSerializer {
-  private data: Partial<DatabaseElo>;
-  private instance: DatabaseElo | null = null;
-
+export class EloSerializer extends Serializer<DatabaseElo> {
   constructor(data: any) {
-    this.data = data;
+    super(data)
   }
 
   validate(): void {
@@ -24,7 +23,7 @@ export class EloSerializer {
       throw new Error("Weight Calss field is required and must be a string.");
     }
   
-    if (!date || !this.isValidDate(date)) {
+    if (!date || !isValidDate(date)) {
       throw new Error("Date field must be a valid date.");
     }
   
@@ -39,18 +38,6 @@ export class EloSerializer {
       date,
       value,
     };
-  }
-  
-  private isValidDate(date: string): boolean {
-    const parsedDate = Date.parse(date);
-    return !isNaN(parsedDate);
-  }
-
-  toInstance(): DatabaseElo {
-    if (!this.instance) {
-      throw new Error("Data has not been validated yet.");
-    }
-    return this.instance;
   }
 
   toDatabaseObject(): DatabaseElo {
