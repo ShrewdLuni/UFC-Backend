@@ -2,6 +2,7 @@ import { DatabaseFight } from "../types/databaseTypes";
 import { ExtenedFight, FightForEloCalculation } from "../types/extendedTypes";
 import { Fight } from "../types/types";
 import { Serializer } from "../abstract/serializer";
+import { FightValidator } from "../validators/fight";
 
 export class FightSerializer extends Serializer<Fight, DatabaseFight> {
   constructor(data: any) {
@@ -9,56 +10,9 @@ export class FightSerializer extends Serializer<Fight, DatabaseFight> {
   }
 
   validate(): void {
-    const { winner, fighterOne, fighterTwo, weightClass, method, round, time } = this.data;
-
-    if (!winner || typeof winner !== "string") {
-      throw new Error("Winner field is required and must be a string.");
-    }
-
-    if (!fighterOne || !fighterTwo) {
-      const message = !fighterOne && !fighterTwo ? "Both Fighters" : !fighterOne ? "Fighter one" : "Fighter two"   
-      throw new Error(`${message} info is missing.`)
-    }
-
-    if (!fighterOne.id || !fighterTwo.id){
-      const message = !fighterOne.id && !fighterTwo.id ? "Both Fighters" : !fighterOne.id ? "Fighter one" : "Fighter two"   
-      throw new Error(`${message} ID is missing.`)
-    }
-
-    if (!weightClass || typeof weightClass !== "string") {
-      throw new Error("Weight Class field is required and must be a string.");
-    }
-
-    if (!method) {
-      throw new Error("Method field is required")
-    }
-
-    if (!method.name || typeof method.name !== "string") {
-      throw new Error("Method Name field is required and must be a string.")
-    }
-
-    if(method.details !== undefined && typeof method.details !== "string") {
-      console.log(method.details !== "string", typeof method.details)
-      throw new Error("Method Details field must be a string if provided.") 
-    }
-
-    if(!round || typeof round !== "number"){
-      throw new Error("Round field must be a positive number.") 
-    }
-
-    if (!time || typeof time !== "string") {
-      throw new Error("Time field is required and must be a string.")
-    }
-
-    this.instance = {
-      winner,
-      fighterOne,
-      fighterTwo,
-      weightClass,
-      method,
-      round,
-      time
-    };
+    const validator = new FightValidator(this.data)
+    validator.isValid()
+    this.instance = validator.getValidatedData()
   }
 
   toDatabaseObject(): DatabaseFight {

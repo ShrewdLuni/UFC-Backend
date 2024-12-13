@@ -1,8 +1,8 @@
-import { isValidDate } from "../helpers/utils";
 import { DatabaseFighter } from "../types/databaseTypes";
 import { ExtenedFighter } from "../types/extendedTypes";
 import { Fighter } from "../types/types";
 import { Serializer } from "../abstract/serializer";
+import { FighterValidator } from "../validators/fighter";
 
 export class FighterSerializer extends Serializer<Fighter, DatabaseFighter>{
   constructor(data: any) {
@@ -10,45 +10,9 @@ export class FighterSerializer extends Serializer<Fighter, DatabaseFighter>{
   }
 
   validate(): void {
-    const { name, height, weight, reach, stance, dob, nickname } = this.data;
-
-    if (!name || typeof name !== 'string') {
-      throw new Error("Name field is required and must be a string.");
-    }
-
-    if (!height || typeof height !== 'number' || height <= 0) {
-      throw new Error("Height field is required and must be a positive number.");
-    }
-
-    if (!weight || typeof weight !== 'number' || weight <= 0) {
-      throw new Error("Weight field is required and must be a positive number.");
-    }
-
-    if (reach !== undefined && (typeof reach !== 'number' || reach <= 0)) {
-      throw new Error("Reach field must be a positive number if provided.");
-    }
-
-    if (stance !== undefined && typeof stance !== 'string') {
-      throw new Error("Stance field must be a string if provided.");
-    }
-
-    if (!dob || !isValidDate(dob)) {
-      throw new Error("DOB field must be a valid date.");
-    }
-
-    if (nickname !== undefined && typeof nickname !== 'string') {
-      throw new Error("Nickname field must be a string if provided.");
-    }
-
-    this.instance = {
-      name,
-      nickname: nickname || null,
-      height,
-      weight,
-      reach: reach || 0,
-      stance: stance || "No info",
-      dob,
-    };
+    const validator = new FighterValidator(this.data)
+    validator.isValid()
+    this.instance = validator.getValidatedData()
   }
 
   toDatabaseObject(): DatabaseFighter {

@@ -2,6 +2,7 @@ import { isValidDate } from "../helpers/utils";
 import { DatabaseElo } from "../types/databaseTypes";
 import { ExtendedElo } from "../types/extendedTypes";
 import { Serializer } from "../abstract/serializer";
+import { EloValidator } from "../validators/elo";
 
 export class EloSerializer extends Serializer<DatabaseElo> {
   constructor(data: any) {
@@ -9,35 +10,9 @@ export class EloSerializer extends Serializer<DatabaseElo> {
   }
 
   validate(): void {
-    const { fighterId, type, weightClass, date, value } = this.data;
-
-    if (!fighterId || typeof fighterId !== 'number' || fighterId <= 0) {
-      throw new Error("Fighter Id field is required and must be a positive number.");
-    }
-  
-    if (!type || typeof type !== 'string') {
-      throw new Error("Type field is required and must be a string.");
-    }
-  
-    if (!weightClass || typeof weightClass !== 'string') {
-      throw new Error("Weight Calss field is required and must be a string.");
-    }
-  
-    if (!date || !isValidDate(date)) {
-      throw new Error("Date field must be a valid date.");
-    }
-  
-    if (!value || typeof value !== 'number' || value <= 0) {
-      throw new Error("Value field is required and must be a positive number.");
-    }
-
-    this.instance = {
-      fighterId,
-      type,
-      weightClass,
-      date,
-      value,
-    };
+    const validator = new EloValidator(this.data)
+    validator.isValid()
+    this.instance = validator.getValidatedData()
   }
 
   toDatabaseObject(): DatabaseElo {

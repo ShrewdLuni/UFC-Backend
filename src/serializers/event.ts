@@ -1,8 +1,8 @@
-import { isValidDate } from "../helpers/utils";
 import { DatabaseEvent } from "../types/databaseTypes";
 import { ExtendedEvent } from "../types/extendedTypes";
 import { Event } from "../types/types";
 import { Serializer } from "../abstract/serializer";
+import { EventValidator } from "../validators/event";
 
 export class EventSerializer extends Serializer<Event, DatabaseEvent> {
   constructor(data: any) {
@@ -10,24 +10,14 @@ export class EventSerializer extends Serializer<Event, DatabaseEvent> {
   }
 
   validate(): void {
+    const validator = new EventValidator(this.data)
+    validator.isValid();
+
     const { name, date, location, fights } = this.data;
-
-    if (!name || typeof name !== "string") {
-      throw new Error("Name field is required and must be a string.");
-    }
-
-    if (!date || !isValidDate(date)) {
-      throw new Error("Date field is required and must be a string.");
-    }
-
-    if(!location || typeof location !== "string"){
-      throw new Error("Location field is required and must be a string.") 
-    }
-
     this.instance = {
-      name,
-      date,
-      location,
+      name: name!,
+      date: date!,
+      location: location!,
       fights: fights || [],
     };
   }
