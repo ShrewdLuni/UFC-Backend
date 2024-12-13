@@ -17,11 +17,11 @@ const setupDatabase = async () => {
       CREATE TABLE IF NOT EXISTS fighter (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
-        nickname TEXT,
-        height NUMERIC,
-        weight NUMERIC,
-        reach NUMERIC,
-        stance TEXT,
+        nickname TEXT DEFAULT 'No nickname',
+        height NUMERIC DEFAULT 0.0,
+        weight NUMERIC DEFAULT 0.0,
+        reach NUMERIC DEFAULT 0.0,
+        stance TEXT DEFAULT 'unknown',
         dob DATE
       );
     
@@ -32,7 +32,7 @@ const setupDatabase = async () => {
       CREATE TABLE IF NOT EXISTS event (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
-        location TEXT,
+        location TEXT DEFAULT 'Unknown location',
         date DATE NOT NULL
       );
       

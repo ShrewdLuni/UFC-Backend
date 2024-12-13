@@ -10,6 +10,7 @@
     "collectData": "ts-node src/helpers/collectData.ts",
     "setupDatabase": "ts-node src/helpers/setupDatabase.ts",
     "dropDatabase": "ts-node src/helpers/dropDatabase.ts",
+    "cleanRun": "npm run dropDatabase && npm run setupDatabase && npm run collectData",
     "elo": "ts-node src/helpers/calculateElo.ts"
   },
   "keywords": [],

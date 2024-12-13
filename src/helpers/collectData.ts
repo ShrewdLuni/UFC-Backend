@@ -9,6 +9,7 @@ import { serializeEventWithID } from '../serializers/event';
 import { serializeFighterWithID } from '../serializers/fighter';
 import { serializeFightWithID } from '../serializers/fight';
 import { ExtendedEvent, ExtenedFighter } from '../types/extendedTypes';
+import { roundTo } from './utils';
 
 const http = rateLimit(axios.create(), { maxRequests: 100, perMilliseconds: 1000 })
 
@@ -18,9 +19,9 @@ const collectData = async () => {
   events.shift()
   let i = 0
   for(const link of events){
-    console.time(`collectEventData - ${link} ${i}/${events.length}`);
+    console.time(`collectEventData - ${link} ${i}/${events.length} ${roundTo((i / events.length) * 100, 2)}%`);
     await collectEventData(link)
-    console.timeEnd(`collectEventData - ${link} ${i}/${events.length}`);
+    console.timeEnd(`collectEventData - ${link} ${i}/${events.length} ${roundTo((i / events.length) * 100, 2)}%`);
     i++;
   }
   console.timeEnd(`DATA`);
@@ -81,7 +82,7 @@ const collectFighter = async (link: string): Promise<ExtenedFighter> => {
     weight: parseInt(weight.replace(/[^\d]/g, ''), 10),
     reach: parseInt(reach.replace(/[^\d]/g, ''), 10),
     stance,
-    dob
+    dob: dob == "--" ? null : dob
   }
   const existingFighter = await getFighterByUniqueFields(name, dob)
   const serializedFighter = existingFighter
