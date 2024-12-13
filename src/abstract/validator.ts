@@ -1,10 +1,20 @@
 import { DateConstraint, PositiveConstraint, ProvidedConstraint, TypeConstraint, ValidationConstraint } from "../constraints";
 
-export abstract class Validator {
+export abstract class Validator<T> {
   protected data: any;
+  protected validatedData?: T;
 
   constructor(data: any) {
     this.data = data;
+  }
+
+  public abstract isValid(): void;
+
+  public getValidatedData(): T {
+    if(!this.validatedData) {
+      throw new Error("Data has not been validated yet.")
+    }
+    return this.validatedData;
   }
 
   protected validate(
