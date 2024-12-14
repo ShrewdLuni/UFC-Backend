@@ -1,14 +1,18 @@
 import axios from 'axios';
 import rateLimit from 'axios-rate-limit';
 import * as cheerio from 'cheerio';
+
 import { Event, Fight, Fighter } from '../types/types';
+import { ExtenedFighter } from '../types/extendedTypes';
+
 import { createEvent } from '../services/event';
 import { createFighter, getFighterByUniqueFields } from '../services/fighter';
 import { createFight } from '../services/fight';
+
 import { serializeEventWithID } from '../serializers/event';
 import { serializeFighterWithID } from '../serializers/fighter';
 import { serializeFightWithID } from '../serializers/fight';
-import { ExtendedEvent, ExtenedFighter } from '../types/extendedTypes';
+
 import { roundTo } from './utils';
 
 const http = rateLimit(axios.create(), { maxRequests: 100, perMilliseconds: 1000 })
@@ -77,11 +81,11 @@ const collectFighter = async (link: string): Promise<ExtenedFighter> => {
   const heightInInches = (height: string) => height.split("'").map(val => parseInt(val.replace('"', ''), 10)).reduce((acc, curr, index) => acc + (index === 0 ? curr * 12 : curr), 0);
   const data: Fighter = {
     name,
-    nickname,
-    height: heightInInches(height),
-    weight: parseInt(weight.replace(/[^\d]/g, ''), 10),
-    reach: parseInt(reach.replace(/[^\d]/g, ''), 10),
-    stance,
+    nickname: nickname || null,
+    height: height == "--" ? 0 : heightInInches(height),
+    weight: weight == "--" ? 0 : parseInt(weight.replace(/[^\d]/g, ''), 10),
+    reach: reach == "--" ? 0 : parseInt(reach.replace(/[^\d]/g, ''), 10),
+    stance: stance || null,
     dob: dob == "--" ? null : dob
   }
   const existingFighter = await getFighterByUniqueFields(name, dob)
@@ -119,13 +123,8 @@ const collectFight: ($row: cheerio.Cheerio) => Fight = ($row: cheerio.Cheerio) =
 const clean = (text: string) => text.trim().replace(/\s+/g, ' ');
 
 const fetchHTML = async (url: string) => {
-  // console.time(`get - ${url}`);
   const response = await http.get(url);
-  // const response = await fetch(url);
-  // console.timeEnd(`get - ${url}`)
-  // console.log('\n')
   const html = response.data;
-  // const html = await response.text();
   const $ = cheerio.load(html);
   return $;
 };
