@@ -7,6 +7,11 @@ export const getEloById = async (id: number): Promise<ExtendedElo | null> => {
   return result.rows.length ? result.rows[0] : null
 }
 
+export const getElo = async (): Promise<ExtendedElo[] | null> => {
+  const result = await pool.query(`SELECT * FROM elo`)
+  return result.rows || null
+} 
+
 export const getLatestEloByFighterId = async (fighterId: number): Promise<ExtendedElo | null> => {
   const result = await pool.query(`
     SELECT *
