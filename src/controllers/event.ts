@@ -23,7 +23,7 @@ export const getEventByIdController = async(req: express.Request, res: express.R
   }
 }
 
-export const getAllEvents = async (req: express.Request, res: express.Response) => {
+export const getEventsController = async (req: express.Request, res: express.Response) => {
   try {
     const events = await getEvents()
     return res.status(200).json(events)

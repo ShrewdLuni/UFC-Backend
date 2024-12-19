@@ -23,7 +23,7 @@ export const getEloByIdController = async (req: express.Request, res: express.Re
   }
 } 
 
-export const getAllEloRecordsController = async (req: express.Request, res: express.Response) => {
+export const getEloController = async (req: express.Request, res: express.Response) => {
   try {
     const eloRecords = await getElo();
     return res.status(200).json(eloRecords);
