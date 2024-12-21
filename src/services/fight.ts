@@ -2,8 +2,9 @@ import pool from "../db"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
-export const getFights = async () => {
-  const result = await pool.query("SELECT * FROM fight")
+export const getFights = async (filters : string = "") => {
+  const query = "SELECT * FROM fight" + filters
+  const result = await pool.query(query)
   return result.rows
 }
 

@@ -2,8 +2,9 @@ import pool from "../db";
 import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
-export const getEvents = async (): Promise<Event[]> => {
-  const result = await pool.query("SELECT * FROM event");
+export const getEvents = async (filters: string = ""): Promise<Event[]> => {
+  const query = "SELECT * FROM event" + filters
+  const result = await pool.query(query);
   return result.rows
 }
 

@@ -3,8 +3,9 @@ import logger from "../logger";
 import { FighterSerializer } from "../serializers/fighter";
 import { Fighter } from "../types/types";
 
-export const getFighters = async (): Promise<Fighter[]> => {
-  const result = await pool.query("SELECT * FROM fighter");
+export const getFighters = async (filters : string = ""): Promise<Fighter[]> => {
+  let query = "SELECT * FROM fighter" + filters;
+  const result = await pool.query(query);
   return result.rows
 }
 
@@ -14,13 +15,11 @@ export const getFighterById = async (id: number): Promise<Fighter | null> => {
 }
 
 export const getFighterByUniqueFields = async (name: string, dob: string) => {
-  // console.log(name, dob)
   let validDob: string | null = dob
   if (dob === '--' || isNaN(Date.parse(dob))) {
-    validDob = null; // Set to null if invalid
+    validDob = null;
   }
 
-  // logger.warn(`Main INFO:Trying to get fighter by ${name}, ${dob}, ${validDob}\n`)
   const result = await pool.query(`
     SELECT * FROM fighter
     WHERE name = $1 AND dob = $2;`,
