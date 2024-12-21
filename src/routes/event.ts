@@ -3,9 +3,8 @@ import { getEventByIdController, getEventsController } from "../controllers/even
 
 export const eventRouter = express.Router();
 
-eventRouter.get("/events/", async (req, res) => {
+eventRouter.get("/events", async (req, res) => {
   try {
-    console.log(1)
     await getEventsController(req, res)
   } catch (error) {
     console.log(error)

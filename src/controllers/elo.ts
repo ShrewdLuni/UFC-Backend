@@ -1,5 +1,6 @@
 import express from "express";
 import { getElo, getEloById } from "../services/elo";
+import { convertFiltersToSQL, getFiltersFromQuery } from "../helpers/utils";
 
 export const getEloByIdController = async (req: express.Request, res: express.Response) => {
   const { id } = req.params;
@@ -25,7 +26,7 @@ export const getEloByIdController = async (req: express.Request, res: express.Re
 
 export const getEloController = async (req: express.Request, res: express.Response) => {
   try {
-    const eloRecords = await getElo();
+    const eloRecords = await getElo(convertFiltersToSQL(getFiltersFromQuery(req.query)));
     return res.status(200).json(eloRecords);
   } catch (error) {
     console.log(error);

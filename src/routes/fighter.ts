@@ -3,7 +3,7 @@ import { getFighterByIdController, getFightersController } from "../controllers/
 
 export const fighterRouter = express.Router();
 
-fighterRouter.get("/fighter", async (req, res) => {
+fighterRouter.get("/fighters", async (req, res) => {
   try {
     await getFightersController(req, res)
   } catch (error) {
