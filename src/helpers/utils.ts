@@ -42,5 +42,6 @@ export const convertFiltersToSQL = (filters: any) : string => {
       filter = "<="
     sqlFilters.push(`${filed} ${filter} ${value}`)
   }
-  return ` WHERE ${sqlFilters.join(" AND ")};`;
+  const result = sqlFilters.length > 1 ? ` WHERE ${sqlFilters.join(" AND ")};` : ""
+  return result;
 }
