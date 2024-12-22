@@ -3,7 +3,49 @@ import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
 export const getEvents = async (filters: string = ""): Promise<Event[]> => {
-  const query = "SELECT * FROM event" + filters
+  // const queryOne = "SELECT * FROM event" + filters//base info
+  // const queryTwo = `SELECT 
+  //   event.*, 
+  //   jsonb_agg(
+  //     jsonb_build_object(
+  //       'id', fight.id,
+  //       'fighter_one_id', fight.fighter_one_id,
+  //       'fighter_two_id', fight.fighter_two_id,
+  //       'result', fight.result,
+  //       'method', fight.method,
+  //       'method_details', fight.method_details,
+  //       'weight_class', fight.weight_class,
+  //       'round', fight.round,
+  //       'time', fight.time
+  //     )
+  //   ) AS fights
+  //   FROM event
+  //   JOIN fight ON fight.event_id = event.id
+  //   GROUP BY event.id
+  //   ORDER BY event.date DESC;`
+  const query = `SELECT 
+    event.*, 
+    jsonb_agg(
+      jsonb_build_object(
+        'id', fight.id,
+        'fighter_one_id', fight.fighter_one_id,
+        'fighter_one_name', fighter_one.name,
+        'fighter_two_id', fight.fighter_two_id,
+        'fighter_two_name', fighter_two.name,
+        'result', fight.result,
+        'method', fight.method,
+        'method_details', fight.method_details,
+        'weight_class', fight.weight_class,
+        'round', fight.round,
+        'time', fight.time
+      )
+    ) AS fights
+    FROM event
+    JOIN fight ON fight.event_id = event.id
+    JOIN fighter AS fighter_one ON fighter_one.id = fight.fighter_one_id
+    JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id
+    GROUP BY event.id
+    ORDER BY event.date DESC;`
   const result = await pool.query(query);
   return result.rows
 }
