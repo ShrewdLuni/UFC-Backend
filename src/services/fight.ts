@@ -1,30 +1,34 @@
 import pool from "../db"
+import { QueryBuilder } from "../query builder"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
 export const getFights = async (filters : string = "") => {
-  //base info
-  //base info + names + event name
-  //base info + names + event info
-  const query = "SELECT * FROM fight" + filters
+  const includeFighterNames = false;
+  const includeEvnentInfo = false; 
 
-  const queryTwo = `
-    SELECT event.name, fight.*, fighter_one.name AS fighter_one_name, fighter_two.name as fighter_two_name
-    FROM fight
-    JOIN fighter as fighter_one ON fighter_one.id = fight.fighter_one_id 
-    JOIN fighter as fighter_two ON fighter_two.id = fight.fighter_two_id
-    JOIN event ON event.id = fight.event_id 
-  `
+  const queryBuilder = new QueryBuilder('fight');
 
-  const queryThree = `
-  SELECT event.name, event.location, event.date, fight.*, fighter_one.name AS fighter_one_name, fighter_two.name as fighter_two_name
-  FROM fight
-  JOIN fighter as fighter_one ON fighter_one.id = fight.fighter_one_id 
-  JOIN fighter as fighter_two ON fighter_two.id = fight.fighter_two_id
-  JOIN event ON event.id = fight.event_id 
-  `
+  queryBuilder.select('fight.*');
 
-  const result = await pool.query(query)
+  if (includeFighterNames) {
+    queryBuilder
+      .select('fighter_one.name AS fighter_one_name')
+      .select('fighter_two.name AS fighter_two_name')
+      .join('JOIN fighter AS fighter_one ON fighter_one.id = fight.fighter_one_id')
+      .join('JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id');
+  }
+
+  if (includeEvnentInfo) {
+    queryBuilder
+      .select('event.name')
+      .select('event.location')
+      .select('event.date')
+      .join('JOIN event ON event.id = fight.event_id');
+  }
+
+
+  const result = await pool.query(queryBuilder.build())
   return result.rows
 }
 
