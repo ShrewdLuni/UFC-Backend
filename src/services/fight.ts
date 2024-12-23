@@ -3,7 +3,27 @@ import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
 export const getFights = async (filters : string = "") => {
+  //base info
+  //base info + names + event name
+  //base info + names + event info
   const query = "SELECT * FROM fight" + filters
+
+  const queryTwo = `
+    SELECT event.name, fight.*, fighter_one.name AS fighter_one_name, fighter_two.name as fighter_two_name
+    FROM fight
+    JOIN fighter as fighter_one ON fighter_one.id = fight.fighter_one_id 
+    JOIN fighter as fighter_two ON fighter_two.id = fight.fighter_two_id
+    JOIN event ON event.id = fight.event_id 
+  `
+
+  const queryThree = `
+  SELECT event.name, event.location, event.date, fight.*, fighter_one.name AS fighter_one_name, fighter_two.name as fighter_two_name
+  FROM fight
+  JOIN fighter as fighter_one ON fighter_one.id = fight.fighter_one_id 
+  JOIN fighter as fighter_two ON fighter_two.id = fight.fighter_two_id
+  JOIN event ON event.id = fight.event_id 
+  `
+
   const result = await pool.query(query)
   return result.rows
 }

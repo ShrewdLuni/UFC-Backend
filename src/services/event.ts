@@ -3,27 +3,29 @@ import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
 export const getEvents = async (filters: string = ""): Promise<Event[]> => {
-  // const queryOne = "SELECT * FROM event" + filters//base info
-  // const queryTwo = `SELECT 
-  //   event.*, 
-  //   jsonb_agg(
-  //     jsonb_build_object(
-  //       'id', fight.id,
-  //       'fighter_one_id', fight.fighter_one_id,
-  //       'fighter_two_id', fight.fighter_two_id,
-  //       'result', fight.result,
-  //       'method', fight.method,
-  //       'method_details', fight.method_details,
-  //       'weight_class', fight.weight_class,
-  //       'round', fight.round,
-  //       'time', fight.time
-  //     )
-  //   ) AS fights
-  //   FROM event
-  //   JOIN fight ON fight.event_id = event.id
-  //   GROUP BY event.id
-  //   ORDER BY event.date DESC;`
-  const query = `SELECT 
+  const query = "SELECT * FROM event" + filters
+
+  const queryIncludeFights = `SELECT 
+    event.*, 
+    jsonb_agg(
+      jsonb_build_object(
+        'id', fight.id,
+        'fighter_one_id', fight.fighter_one_id,
+        'fighter_two_id', fight.fighter_two_id,
+        'result', fight.result,
+        'method', fight.method,
+        'method_details', fight.method_details,
+        'weight_class', fight.weight_class,
+        'round', fight.round,
+        'time', fight.time
+      )
+    ) AS fights
+    FROM event
+    JOIN fight ON fight.event_id = event.id
+    GROUP BY event.id
+    ORDER BY event.date DESC;`
+  
+  const queryIncludeFightsAndFighterNames = `SELECT 
     event.*, 
     jsonb_agg(
       jsonb_build_object(
@@ -46,6 +48,7 @@ export const getEvents = async (filters: string = ""): Promise<Event[]> => {
     JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id
     GROUP BY event.id
     ORDER BY event.date DESC;`
+
   const result = await pool.query(query);
   return result.rows
 }
