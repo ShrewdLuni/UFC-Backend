@@ -1,11 +1,59 @@
 import pool from "../db";
 import logger from "../logger";
+import { QueryBuilder } from "../queryBuilder";
 import { FighterSerializer } from "../serializers/fighter";
 import { Fighter } from "../types/types";
 
 export const getFighters = async (filters : string = ""): Promise<Fighter[]> => {
-  let query = "SELECT * FROM fighter" + filters;
-  const result = await pool.query(query);
+
+  const includeFighterEloHistory = true;
+  const includeFighterEvents = true;
+
+  const queryBuilder = new QueryBuilder('fighter')
+  .selectDistinct()
+  .select('fighter.*')
+  .where("fighter.name = 'Jon Jones'")
+  .group('fighter.id')
+  .order('fighter.name');
+
+
+  if(includeFighterEvents){
+    queryBuilder.jsonAgg('fights', {
+      'id': 'fight.id',
+      'event_id': 'fight.event_id',
+      'fighter_one_id': 'fight.fighter_one_id',
+      'fighter_two_id': 'fight.fighter_two_id',
+      'result': 'fight.result',
+      'winner_id': 'fight.winner_id',
+      'method': 'fight.method',
+      'method_details': 'fight.method_details',
+      'weight_class': 'fight.weight_class',
+      'round': 'fight.round',
+      'time': 'fight.time',
+      'event_name': 'event.name',
+      'event_location': 'event.location',
+      'event_date': 'event.date'
+    }, { distinct: true })
+    .join('JOIN fight ON (fight.fighter_one_id = fighter.id OR fight.fighter_two_id = fighter.id)')
+    .join('JOIN event ON event.id = fight.event_id')
+  }
+  if(includeFighterEloHistory){
+    queryBuilder.selectSubquery(
+      `SELECT jsonb_agg(
+        jsonb_build_object(
+          'id', elo.id,
+          'value', elo.value,
+          'date', elo.date,
+          'type', elo.type,
+          'weight_class', elo.weight_class
+        ) ORDER BY elo.date
+      )
+      FROM elo
+      WHERE elo.fighter_id = fighter.id`,
+      'elo_history'
+    )
+  }
+  const result = await pool.query(queryBuilder.build());
   return result.rows
 }
 

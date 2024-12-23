@@ -5,9 +5,20 @@ export class QueryBuilder {
   private selects: string[] = [];
   private groupBy: string[] = [];
   private orderBy: string[] = [];
+  private distinct: boolean = false;
 
   constructor(table: string) {
     this.table = table;
+  }
+
+  selectDistinct(): this {
+    this.distinct = true;
+    return this;
+  }
+
+  selectSubquery(subquery: string, alias: string): this {
+    this.selects.push(`(${subquery}) AS ${alias}`);
+    return this;
   }
 
   select(fileds: string | string[]): this {
@@ -47,12 +58,17 @@ export class QueryBuilder {
     return this;
   }
 
-  jsonAgg(alias: string, fields: Record<string, string>): this {
+  jsonAgg(alias: string, fields: Record<string, string>, options?: { distinct?: boolean, orderBy?: string }): this {
     const jsonAggFields = Object.entries(fields)
       .map(([key, value]) => `'${key}', ${value}`)
       .join(', ');
-
-    const jsonAggClause = `jsonb_agg(jsonb_build_object(${jsonAggFields})) AS ${alias}`;
+  
+    let jsonAggClause = `jsonb_agg(`;
+    if (options?.distinct) jsonAggClause += 'DISTINCT ';
+    jsonAggClause += `jsonb_build_object(${jsonAggFields})`;
+    if (options?.orderBy) jsonAggClause += ` ORDER BY ${options.orderBy}`;
+    jsonAggClause += `) AS ${alias}`;
+    
     this.selects.push(jsonAggClause);
     return this;
   }
