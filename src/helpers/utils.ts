@@ -19,7 +19,6 @@ export const getFiltersFromQuery = (query: any) => {
   return filters;
 }
 
-
 export const convertFiltersToSQL = (filters: any) : string => {
   let sqlFilters = []
   for(const item in filters){

@@ -1,5 +1,5 @@
 import pool from "../db"
-import { QueryBuilder } from "../query builder"
+import { QueryBuilder } from "../queryBuilder"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
@@ -26,7 +26,6 @@ export const getFights = async (filters : string = "") => {
       .select('event.date')
       .join('JOIN event ON event.id = fight.event_id');
   }
-
 
   const result = await pool.query(queryBuilder.build())
   return result.rows

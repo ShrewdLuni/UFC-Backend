@@ -1,55 +1,39 @@
 import pool from "../db";
+import { QueryBuilder } from "../queryBuilder";
 import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
 export const getEvents = async (filters: string = ""): Promise<Event[]> => {
-  const query = "SELECT * FROM event" + filters
+  const includeFightsInfo = true;
+  const includeFightersNames = true; 
 
-  const queryIncludeFights = `SELECT 
-    event.*, 
-    jsonb_agg(
-      jsonb_build_object(
-        'id', fight.id,
-        'fighter_one_id', fight.fighter_one_id,
-        'fighter_two_id', fight.fighter_two_id,
-        'result', fight.result,
-        'method', fight.method,
-        'method_details', fight.method_details,
-        'weight_class', fight.weight_class,
-        'round', fight.round,
-        'time', fight.time
-      )
-    ) AS fights
-    FROM event
-    JOIN fight ON fight.event_id = event.id
-    GROUP BY event.id
-    ORDER BY event.date DESC;`
+  const queryBuilder = new QueryBuilder('event');
+
+  queryBuilder.select('event.*').group('event.id').order('event.date', 'DESC');
   
-  const queryIncludeFightsAndFighterNames = `SELECT 
-    event.*, 
-    jsonb_agg(
-      jsonb_build_object(
-        'id', fight.id,
-        'fighter_one_id', fight.fighter_one_id,
-        'fighter_one_name', fighter_one.name,
-        'fighter_two_id', fight.fighter_two_id,
-        'fighter_two_name', fighter_two.name,
-        'result', fight.result,
-        'method', fight.method,
-        'method_details', fight.method_details,
-        'weight_class', fight.weight_class,
-        'round', fight.round,
-        'time', fight.time
-      )
-    ) AS fights
-    FROM event
-    JOIN fight ON fight.event_id = event.id
-    JOIN fighter AS fighter_one ON fighter_one.id = fight.fighter_one_id
-    JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id
-    GROUP BY event.id
-    ORDER BY event.date DESC;`
+  if (includeFightsInfo || includeFightersNames) {
+    queryBuilder.join('JOIN fight ON fight.event_id = event.id');
 
-  const result = await pool.query(query);
+    const jsonFields: Record<string, string> = {
+      id: 'fight.id',
+      fighter_one_id: 'fight.fighter_one_id',
+      fighter_two_id: 'fight.fighter_two_id',
+      result: 'fight.result',
+      method: 'fight.method',
+      method_details: 'fight.method_details',
+      weight_class: 'fight.weight_class',
+      round: 'fight.round',
+      time: 'fight.time',
+    }
+    if(includeFightersNames){
+      jsonFields['fighter_one_name'] = 'fighter_one.name'
+      jsonFields['fighter_two_name'] = 'fighter_two.name'
+      queryBuilder.join('JOIN fighter AS fighter_one ON fighter_one.id = fight.fighter_one_id').join('JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id')
+    }
+    queryBuilder.jsonAgg('fights', jsonFields)
+  }
+
+  const result = await pool.query(queryBuilder.build());
   return result.rows
 }
 
