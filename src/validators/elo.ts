@@ -10,6 +10,7 @@ export class EloValidator extends Validator<DatabaseElo> {
     this.validateString(weightClass, "Weight Class")
     this.validateDate(date, "date")
     this.validateNumber(value, "value", { positive: true })
+    
     this.validatedData = this.data
   }
 }
