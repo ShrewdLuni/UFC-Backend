@@ -26,7 +26,12 @@ export const getFightByIdController = async (req: express.Request, res: express.
 
 export const getFightsController = async (req: express.Request, res: express.Response) => {
   try {
-    const fights = await getFights(convertFiltersToSQL(req.query.filters));
+    const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
+
+    const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : " ";
+    const options = {includeFighterInfo: rawOptions.includes('includeFighterInfo'), includeEventInfo: rawOptions.includes('includeEventInfo'),};
+
+    const fights = await getFights(filters, options);
     return res.status(200).json(fights);
   } catch (error) {
     console.log(error);

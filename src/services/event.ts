@@ -3,15 +3,12 @@ import { QueryBuilder } from "../queryBuilder";
 import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
-export const getEvents = async (filters: string | string[]): Promise<Event[]> => {
-  const includeFightsInfo = false;
-  const includeFightersNames = false; 
-
+export const getEvents = async (filters: string | string[], options: {includeFightsInfo: boolean, includeFightersNames: boolean}): Promise<Event[]> => {
   const queryBuilder = new QueryBuilder('event');
 
   queryBuilder.select('event.*').where(filters).group('event.id').order('event.date', 'DESC');
   
-  if (includeFightsInfo || includeFightersNames) {
+  if (options.includeFightsInfo || options.includeFightersNames) {
     queryBuilder.join('JOIN fight ON fight.event_id = event.id');
 
     const jsonFields: Record<string, string> = {
@@ -25,7 +22,7 @@ export const getEvents = async (filters: string | string[]): Promise<Event[]> =>
       round: 'fight.round',
       time: 'fight.time',
     }
-    if(includeFightersNames){
+    if(options.includeFightersNames){
       jsonFields['fighter_one_name'] = 'fighter_one.name'
       jsonFields['fighter_two_name'] = 'fighter_two.name'
       queryBuilder.join('JOIN fighter AS fighter_one ON fighter_one.id = fight.fighter_one_id').join('JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id')

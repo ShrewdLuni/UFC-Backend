@@ -3,15 +3,12 @@ import { QueryBuilder } from "../queryBuilder"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
-export const getFights = async (filters : string | string[]) => {
-  const includeFighterNames = false;
-  const includeEvnentInfo = false; 
-
+export const getFights = async (filters : string | string[], options: {includeFighterInfo: boolean, includeEventInfo: boolean}) => {
   const queryBuilder = new QueryBuilder('fight');
 
   queryBuilder.select('fight.*').where(filters);
 
-  if (includeFighterNames) {
+  if (options.includeFighterInfo) {
     queryBuilder
       .select('fighter_one.name AS fighter_one_name')
       .select('fighter_two.name AS fighter_two_name')
@@ -19,7 +16,7 @@ export const getFights = async (filters : string | string[]) => {
       .join('JOIN fighter AS fighter_two ON fighter_two.id = fight.fighter_two_id');
   }
 
-  if (includeEvnentInfo) {
+  if (options.includeEventInfo) {
     queryBuilder
       .select('event.name')
       .select('event.location')

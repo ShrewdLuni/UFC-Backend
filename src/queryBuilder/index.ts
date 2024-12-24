@@ -35,7 +35,10 @@ export class QueryBuilder {
     return this;
   }
 
-  where(filters: string | string[]): this {
+  where(filters: string | string[] | null): this {
+    if(!filters){
+      return this;
+    }
     if(Array.isArray(filters)) {
       this.filters.push(...filters)
     } else {

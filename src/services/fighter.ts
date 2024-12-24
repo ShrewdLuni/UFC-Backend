@@ -1,15 +1,10 @@
-import { filter } from "cheerio/dist/commonjs/api/traversing";
 import pool from "../db";
 import logger from "../logger";
 import { QueryBuilder } from "../queryBuilder";
 import { FighterSerializer } from "../serializers/fighter";
 import { Fighter } from "../types/types";
 
-export const getFighters = async (filters : string | string[]): Promise<Fighter[]> => {
-
-  const includeFighterEloHistory = false;
-  const includeFighterEvents = true;
-
+export const getFighters = async (filters : string | string[], options: {includeEventsInfo: boolean, includeEloHistory: boolean}): Promise<Fighter[]> => {
   const queryBuilder = new QueryBuilder('fighter')
   .selectDistinct()
   .select('fighter.*')
@@ -17,8 +12,7 @@ export const getFighters = async (filters : string | string[]): Promise<Fighter[
   .group('fighter.id')
   .order('fighter.name');
 
-
-  if(includeFighterEvents){
+  if(options.includeEventsInfo){
     queryBuilder.jsonAgg('fights', {
       'id': 'fight.id',
       'event_id': 'fight.event_id',
@@ -38,7 +32,7 @@ export const getFighters = async (filters : string | string[]): Promise<Fighter[
     .join('JOIN fight ON (fight.fighter_one_id = fighter.id OR fight.fighter_two_id = fighter.id)')
     .join('JOIN event ON event.id = fight.event_id')
   }
-  if(includeFighterEloHistory){
+  if(options.includeEloHistory){
     queryBuilder.selectSubquery(
       `SELECT jsonb_agg(
         jsonb_build_object(
@@ -54,8 +48,6 @@ export const getFighters = async (filters : string | string[]): Promise<Fighter[
       'elo_history'
     )
   }
-  console.log();
-  console.log(queryBuilder.build())
   const result = await pool.query(queryBuilder.build());
   return result.rows
 }

@@ -26,7 +26,12 @@ export const getFighterByIdController = async(req: express.Request, res: express
 
 export const getFightersController = async (req: express.Request, res: express.Response) => {
   try {
-    const fighters = await getFighters(convertFiltersToSQL(req.query.filters));
+    const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
+
+    const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : " ";
+    const options = {includeEloHistory: rawOptions.includes('includeEloHistory'), includeEventsInfo: rawOptions.includes('includeEventsInfo'),};
+
+    const fighters = await getFighters(filters, options);
     return res.status(200).json(fighters);
   } catch (error) {
     console.log(error);

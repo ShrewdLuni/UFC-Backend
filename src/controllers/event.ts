@@ -26,7 +26,12 @@ export const getEventByIdController = async(req: express.Request, res: express.R
 
 export const getEventsController = async (req: express.Request, res: express.Response) => {
   try {
-    const events = await getEvents(convertFiltersToSQL(req.query.filters));
+    const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : " ";
+
+    const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
+    const options = {includeFightsInfo: rawOptions.includes('includeFightsInfo'), includeFightersNames: rawOptions.includes('includeFightersNames'),};
+
+    const events = await getEvents(filters, options);
     return res.status(200).json(events)
   } catch (error) {
     console.log(error)
