@@ -1,4 +1,3 @@
-import { isValidDate } from "../helpers/utils";
 import { DatabaseElo } from "../types/databaseTypes";
 import { ExtendedElo } from "../types/extendedTypes";
 import { Serializer } from "../abstract/serializer";

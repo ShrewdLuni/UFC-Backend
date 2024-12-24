@@ -12,14 +12,7 @@ export class EventSerializer extends Serializer<Event, DatabaseEvent> {
   validate(): void {
     const validator = new EventValidator(this.data)
     validator.isValid();
-
-    const { name, date, location, fights } = this.data;
-    this.instance = {
-      name: name!,
-      date: date!,
-      location: location!,
-      fights: fights || [],
-    };
+    this.instance = validator.getValidatedData()
   }
 
   toDatabaseObject(): DatabaseEvent {
