@@ -49,7 +49,7 @@ export const getFighters = async (filters : string | string[], options: {include
     )
   }
   const result = await pool.query(queryBuilder.build());
-  return result.rows
+  return result.rows || null
 }
 
 export const getFighterById = async (id: number): Promise<Fighter | null> => {

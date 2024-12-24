@@ -26,7 +26,12 @@ export const getEloByIdController = async (req: express.Request, res: express.Re
 
 export const getEloController = async (req: express.Request, res: express.Response) => {
   try {
-    const eloRecords = await getElo(convertFiltersToSQL(req.query.filters));
+    const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
+    
+    const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : "";
+    const options = {includeFighterInfo: rawOptions.includes('includeFighterInfo')};
+
+    const eloRecords = await getElo(filters, options);
     return res.status(200).json(eloRecords);
   } catch (error) {
     console.log(error);

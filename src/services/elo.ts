@@ -1,17 +1,26 @@
 import pool from "../db";
+import { QueryBuilder } from "../queryBuilder";
 import { EloSerializer } from "../serializers/elo";
 import { ExtendedElo } from "../types/extendedTypes";
+
+export const getElo = async (filters: string | string[], options: { includeFighterInfo: boolean }): Promise<ExtendedElo[] | null> => {
+  
+  const queryBuilder = new QueryBuilder('elo');
+
+  queryBuilder.select("elo.*").where(filters)
+  
+  if(options.includeFighterInfo){
+    queryBuilder.select("fighter.name").join("JOIN fighter ON fighter.id = elo.fighter_id")
+  }
+
+  const result = await pool.query(queryBuilder.build())
+  return result.rows || null
+} 
 
 export const getEloById = async (id: number): Promise<ExtendedElo | null> => {
   const result = await pool.query("SELECT * FROM elo WHERE id = $1", [id]);
   return result.rows.length ? result.rows[0] : null
 }
-
-export const getElo = async (filters: string | string[]): Promise<ExtendedElo[] | null> => {
-  const query = "SELECT * FROM elo" + filters
-  const result = await pool.query(query)
-  return result.rows || null
-} 
 
 export const getLatestEloByFighterId = async (fighterId: number): Promise<ExtendedElo | null> => {
   const result = await pool.query(`

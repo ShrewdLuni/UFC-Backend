@@ -31,7 +31,7 @@ export const getEvents = async (filters: string | string[], options: {includeFig
   }
 
   const result = await pool.query(queryBuilder.build());
-  return result.rows
+  return result.rows || null
 }
 
 export const getEventById = async (id: number): Promise<Event | null> => {

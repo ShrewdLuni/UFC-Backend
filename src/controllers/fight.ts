@@ -28,7 +28,7 @@ export const getFightsController = async (req: express.Request, res: express.Res
   try {
     const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
 
-    const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : " ";
+    const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : "";
     const options = {includeFighterInfo: rawOptions.includes('includeFighterInfo'), includeEventInfo: rawOptions.includes('includeEventInfo'),};
 
     const fights = await getFights(filters, options);

@@ -88,13 +88,12 @@ export class QueryBuilder {
     const groupClause = this.groupBy.length > 0 ? `GROUP BY ${this.groupBy.join(', ')}` : '';
     const orderClause = this.orderBy.length > 0 ? `ORDER BY ${this.orderBy.join(', ')}` : '';
 
-    return `
-SELECT ${selectClause} 
+    return `SELECT ${selectClause} 
 ${fromClause}
 ${joinClause}
 ${whereClause}
 ${groupClause}
 ${orderClause}
-    `.trim();
+`.trim();
   }
 }

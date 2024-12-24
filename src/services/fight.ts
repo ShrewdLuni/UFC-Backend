@@ -24,7 +24,7 @@ export const getFights = async (filters : string | string[], options: {includeFi
       .join('JOIN event ON event.id = fight.event_id');
   }
   const result = await pool.query(queryBuilder.build())
-  return result.rows
+  return result.rows || null
 }
 
 export const getAllFightsWithEventDates = async () => {
