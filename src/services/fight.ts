@@ -3,13 +3,13 @@ import { QueryBuilder } from "../queryBuilder"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
-export const getFights = async (filters : string = "") => {
+export const getFights = async (filters : string | string[]) => {
   const includeFighterNames = false;
   const includeEvnentInfo = false; 
 
   const queryBuilder = new QueryBuilder('fight');
 
-  queryBuilder.select('fight.*');
+  queryBuilder.select('fight.*').where(filters);
 
   if (includeFighterNames) {
     queryBuilder
@@ -26,7 +26,6 @@ export const getFights = async (filters : string = "") => {
       .select('event.date')
       .join('JOIN event ON event.id = fight.event_id');
   }
-
   const result = await pool.query(queryBuilder.build())
   return result.rows
 }

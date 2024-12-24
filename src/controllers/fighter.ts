@@ -1,6 +1,6 @@
 import express from "express";
 import { getFighters, getFighterById } from "../services/fighter";
-import { convertFiltersToSQL, getFiltersFromQuery } from "../helpers/utils";
+import { convertFiltersToSQL } from "../helpers/utils";
 
 export const getFighterByIdController = async(req: express.Request, res: express.Response) => {
   const { id } = req.params;
@@ -26,7 +26,7 @@ export const getFighterByIdController = async(req: express.Request, res: express
 
 export const getFightersController = async (req: express.Request, res: express.Response) => {
   try {
-    const fighters = await getFighters(convertFiltersToSQL(getFiltersFromQuery(req.query)));
+    const fighters = await getFighters(convertFiltersToSQL(req.query.filters));
     return res.status(200).json(fighters);
   } catch (error) {
     console.log(error);

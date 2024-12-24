@@ -1,18 +1,19 @@
+import { filter } from "cheerio/dist/commonjs/api/traversing";
 import pool from "../db";
 import logger from "../logger";
 import { QueryBuilder } from "../queryBuilder";
 import { FighterSerializer } from "../serializers/fighter";
 import { Fighter } from "../types/types";
 
-export const getFighters = async (filters : string = ""): Promise<Fighter[]> => {
+export const getFighters = async (filters : string | string[]): Promise<Fighter[]> => {
 
-  const includeFighterEloHistory = true;
+  const includeFighterEloHistory = false;
   const includeFighterEvents = true;
 
   const queryBuilder = new QueryBuilder('fighter')
   .selectDistinct()
   .select('fighter.*')
-  .where("fighter.name = 'Jon Jones'")
+  .where(filters)
   .group('fighter.id')
   .order('fighter.name');
 
@@ -53,6 +54,8 @@ export const getFighters = async (filters : string = ""): Promise<Fighter[]> => 
       'elo_history'
     )
   }
+  console.log();
+  console.log(queryBuilder.build())
   const result = await pool.query(queryBuilder.build());
   return result.rows
 }

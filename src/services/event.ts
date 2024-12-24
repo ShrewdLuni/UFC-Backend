@@ -3,13 +3,13 @@ import { QueryBuilder } from "../queryBuilder";
 import { EventSerializer } from "../serializers/event";
 import { Event } from "../types/types";
 
-export const getEvents = async (filters: string = ""): Promise<Event[]> => {
-  const includeFightsInfo = true;
-  const includeFightersNames = true; 
+export const getEvents = async (filters: string | string[]): Promise<Event[]> => {
+  const includeFightsInfo = false;
+  const includeFightersNames = false; 
 
   const queryBuilder = new QueryBuilder('event');
 
-  queryBuilder.select('event.*').group('event.id').order('event.date', 'DESC');
+  queryBuilder.select('event.*').where(filters).group('event.id').order('event.date', 'DESC');
   
   if (includeFightsInfo || includeFightersNames) {
     queryBuilder.join('JOIN fight ON fight.event_id = event.id');

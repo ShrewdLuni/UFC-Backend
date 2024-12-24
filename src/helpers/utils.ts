@@ -8,23 +8,29 @@ export const isValidDate = (date: string): boolean => {
   return !isNaN(parsedDate);
 };
 
-export const getFiltersFromQuery = (query: any) => {
-  const filters: Record<string, any> = Object.entries(query)
-  .filter(([key]) => key.startsWith("filter_"))
-  .reduce((acc: Record<string, any>, [key, value]) => {
-    const [, part1, part2] = key.split("_");
-    acc[`${part1}_${part2}`] = value;
-    return acc;
-  }, {});
-  return filters;
+export const convertFilterString = (input: string): string[]=> {
+  const regex = /\[([^\[\]]+)\]/g;
+  const matches: string[] = [];
+  let match;
+
+  while ((match = regex.exec(input)) !== null) {
+    matches.push(match[1]);
+  }
+
+  return matches;
 }
 
-export const convertFiltersToSQL = (filters: any) : string => {
+export const convertFiltersToSQL = (filters: any) : string[] => {
+  if(!filters){
+    return []
+  }
+
   let sqlFilters = []
-  for(const item in filters){
-    const data = item.split("_");
-    const filed =  data[0]
-    const value = filters[item]
+
+  for(const item of filters.split(",")){
+    const data = convertFilterString(item);
+    const field =  data[0]
+    const value = data[2]
     const rawFilter = data[1]
     let filter = "="
     if(rawFilter == "eq")
@@ -39,8 +45,7 @@ export const convertFiltersToSQL = (filters: any) : string => {
       filter = ">="
     else if(rawFilter == "lte")
       filter = "<="
-    sqlFilters.push(`${filed} ${filter} ${value}`)
+    sqlFilters.push(`${field} ${filter} ${value}`)
   }
-  const result = sqlFilters.length > 1 ? ` WHERE ${sqlFilters.join(" AND ")};` : ""
-  return result;
+  return sqlFilters;
 }

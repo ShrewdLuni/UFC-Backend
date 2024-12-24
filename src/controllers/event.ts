@@ -1,6 +1,6 @@
 import express from "express";
 import { getEvents, getEventById } from "../services/event";
-import { convertFiltersToSQL, getFiltersFromQuery } from "../helpers/utils";
+import { convertFiltersToSQL } from "../helpers/utils";
 
 export const getEventByIdController = async(req: express.Request, res: express.Response) => {
   const { id } = req.params;
@@ -26,7 +26,7 @@ export const getEventByIdController = async(req: express.Request, res: express.R
 
 export const getEventsController = async (req: express.Request, res: express.Response) => {
   try {
-    const events = await getEvents(convertFiltersToSQL(getFiltersFromQuery(req.query)))
+    const events = await getEvents(convertFiltersToSQL(req.query.filters));
     return res.status(200).json(events)
   } catch (error) {
     console.log(error)

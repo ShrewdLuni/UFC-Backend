@@ -35,8 +35,12 @@ export class QueryBuilder {
     return this;
   }
 
-  where(filter: string): this {
-    this.filters.push(filter)
+  where(filters: string | string[]): this {
+    if(Array.isArray(filters)) {
+      this.filters.push(...filters)
+    } else {
+      this.filters.push(filters)
+    }
     return this;
   }
 
@@ -82,12 +86,12 @@ export class QueryBuilder {
     const orderClause = this.orderBy.length > 0 ? `ORDER BY ${this.orderBy.join(', ')}` : '';
 
     return `
-      SELECT ${selectClause}
-      ${fromClause}
-      ${joinClause}
-      ${whereClause}
-      ${groupClause}
-      ${orderClause}
+SELECT ${selectClause} 
+${fromClause}
+${joinClause}
+${whereClause}
+${groupClause}
+${orderClause}
     `.trim();
   }
 }
