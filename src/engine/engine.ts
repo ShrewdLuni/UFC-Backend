@@ -1,15 +1,14 @@
-import { triggerAsyncId } from "async_hooks";
 import { roundTo } from "../helpers/utils";
 
 export class EloRatingCalculator {
   private K: number;
-  private KOMultiplier: number
-  public InitialRating: number
-  public RatingType: string
+  private KnockoutMultiplier: number
+  private InitialRating: number
+  private RatingType: string
 
-  constructor(K: number = 20, KOMultiplier: number = 1.2, InitialRating: number = 1000, RatingType: string = "normal") {
+  constructor(K: number = 20, KnockoutMultiplier: number = 1.2, InitialRating: number = 1000, RatingType: string = "normal") {
     this.K = K;
-    this.KOMultiplier = KOMultiplier;
+    this.KnockoutMultiplier = KnockoutMultiplier;
     this.InitialRating = InitialRating;
     this.RatingType = RatingType;
   }
@@ -22,8 +21,24 @@ export class EloRatingCalculator {
     const expectedScore = this.calculateExpectedScore(playerRating, opponentRating);
     const delta = roundTo(this.K * (realScore - expectedScore), 2);
     if(isKO) {
-      return delta * this.KOMultiplier;
+      return delta * this.KnockoutMultiplier;
     }
     return delta;
+  }
+
+  public getKFactor(): number {
+    return this.K;
+  }
+  
+  public getKnockoutMultiplier(): number {
+    return this.KnockoutMultiplier;
+  }
+  
+  public getInitialRating(): number {
+    return this.InitialRating;
+  }
+  
+  public getRatingType(): string {
+    return this.RatingType;
   }
 }
