@@ -15,20 +15,20 @@ const calculateElo = async () => {
     if(!rawRatingA){
       rawRatingA = await createElo({
         fighterId: fight.fighterOneId,
-        type: eloEngine.RatingType,
+        type: eloEngine.getRatingType(),
         weightClass: fight.weightClass,
         date: fight.date,
-        value: eloEngine.InitialRating,
+        value: eloEngine.getInitialRating(),
       })
     }
 
     if(!rawRatingB){
       rawRatingB = await createElo({
         fighterId: fight.fighterTwoId,
-        type: eloEngine.RatingType,
+        type: eloEngine.getRatingType(),
         weightClass: fight.weightClass,
         date: fight.date,
-        value: eloEngine.InitialRating,
+        value: eloEngine.getInitialRating(),
       })
     }
 
