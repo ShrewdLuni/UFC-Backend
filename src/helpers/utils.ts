@@ -8,7 +8,7 @@ export const isValidDate = (date: string): boolean => {
   return !isNaN(parsedDate);
 };
 
-export const convertFilterString = (input: string): string[]=> {
+export const convertFilterString = (input: string): string[] => {
   const regex = /\[([^\[\]]+)\]/g;
   const matches: string[] = [];
   let match;
@@ -48,4 +48,15 @@ export const convertFiltersToSQL = (filters: any) : string[] => {
     sqlFilters.push(`${field} ${filter} ${value}`)
   }
   return sqlFilters;
+}
+
+export const converOrderingToSql = (sort_by: any) => {
+  let sqlOrdering = []
+  for(const item of sort_by.split(",")){
+    let data = convertFilterString(item)
+    const field = data[0]
+    const direction: "ASC" | "DESC" = data[1].toLowerCase() == "asc" ? "ASC" : "DESC"
+    sqlOrdering.push({field, direction})
+  }
+  return sqlOrdering;
 }
