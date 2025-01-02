@@ -4,13 +4,17 @@ import { QueryBuilder } from "../queryBuilder";
 import { FighterSerializer } from "../serializers/fighter";
 import { Fighter } from "../types/types";
 
-export const getFighters = async (filters : string | string[], options: {includeEventsInfo: boolean, includeEloHistory: boolean}): Promise<Fighter[]> => {
+export const getFighters = async (filters : string | string[], sort_by : { field: string; direction: "ASC" | "DESC"; }[], options: {includeEventsInfo: boolean, includeEloHistory: boolean}): Promise<Fighter[]> => {
   const queryBuilder = new QueryBuilder('fighter')
   .selectDistinct()
   .select('fighter.*')
   .where(filters)
   .group('fighter.id')
-  .order('fighter.name');
+
+  for(let item of sort_by){
+    console.log(item)
+    queryBuilder.order(item.field, item.direction)
+  }
 
   if(options.includeEventsInfo){
     queryBuilder.jsonAgg('fights', {
@@ -48,6 +52,7 @@ export const getFighters = async (filters : string | string[], options: {include
       'elo_history'
     )
   }
+  console.log(queryBuilder.build())
   const result = await pool.query(queryBuilder.build());
   return result.rows || null
 }
