@@ -50,7 +50,9 @@ export const convertFiltersToSQL = (filters: any) : string[] => {
   return sqlFilters;
 }
 
-export const convertOrderingToSql = (sortBy: string): { field: string; direction: "ASC" | "DESC" }[] => {
+export const convertOrderingToSql = (sortBy: any): { field: string; direction: "ASC" | "DESC" }[] => {
+  if(typeof sortBy !== "string")
+    return []
   return sortBy.split(",").map(item => {
     const [field, dir] = convertFilterString(item);
     const direction: "ASC" | "DESC" = dir?.toLowerCase() === "asc" ? "ASC" : "DESC";
