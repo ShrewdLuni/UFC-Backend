@@ -3,11 +3,13 @@ import { QueryBuilder } from "../queryBuilder";
 import { EloSerializer } from "../serializers/elo";
 import { ExtendedElo } from "../types/extendedTypes";
 
-export const getElo = async (filters: string | string[], options: { includeFighterInfo: boolean }): Promise<ExtendedElo[] | null> => {
+export const getElo = async (filters: string | string[], sort_by : { field: string; direction: "ASC" | "DESC"; }[], options: { includeFighterInfo: boolean }): Promise<ExtendedElo[] | null> => {
   
   const queryBuilder = new QueryBuilder('elo');
 
   queryBuilder.select("elo.*").where(filters)
+  for(let item of sort_by)
+    queryBuilder.order(item.field, item.direction)
   
   if(options.includeFighterInfo){
     queryBuilder.select("fighter.name").join("JOIN fighter ON fighter.id = elo.fighter_id")

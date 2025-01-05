@@ -1,6 +1,6 @@
 import express from "express";
 import { getElo, getEloById } from "../services/elo";
-import { convertFiltersToSQL } from "../helpers/utils";
+import { convertFiltersToSQL, convertOrderingToSql } from "../helpers/utils";
 
 export const getEloByIdController = async (req: express.Request, res: express.Response) => {
   const { id } = req.params;
@@ -29,9 +29,10 @@ export const getEloController = async (req: express.Request, res: express.Respon
     const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
     
     const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : "";
+    const sorting = req.query?.sort_by ? convertOrderingToSql(req.query.sort_by) : [];
     const options = {includeFighterInfo: rawOptions.includes('includeFighterInfo')};
 
-    const eloRecords = await getElo(filters, options);
+    const eloRecords = await getElo(filters, sorting, options);
     return res.status(200).json(eloRecords);
   } catch (error) {
     console.log(error);

@@ -10,12 +10,9 @@ export const getFighters = async (filters : string | string[], sort_by : { field
   .select('fighter.*')
   .where(filters)
   .group('fighter.id')
-
-  for(let item of sort_by){
-    console.log(item)
+  for(let item of sort_by)
     queryBuilder.order(item.field, item.direction)
-  }
-
+  
   if(options.includeEventsInfo){
     queryBuilder.jsonAgg('fights', {
       'id': 'fight.id',

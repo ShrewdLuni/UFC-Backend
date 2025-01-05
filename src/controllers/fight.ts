@@ -1,6 +1,6 @@
 import express from "express";
 import { getFights, getFightById } from "../services/fight";
-import { convertFiltersToSQL } from "../helpers/utils";
+import { convertFiltersToSQL, convertOrderingToSql } from "../helpers/utils";
 
 export const getFightByIdController = async (req: express.Request, res: express.Response) => {
   const { id } = req.params;
@@ -29,9 +29,10 @@ export const getFightsController = async (req: express.Request, res: express.Res
     const rawOptions = (typeof req.query.options === 'string' ? req.query.options : '').split(',').filter(Boolean);
 
     const filters = req.query?.filters ? convertFiltersToSQL(req.query.filters) : "";
+    const sorting = req.query?.sort_by ? convertOrderingToSql(req.query.sort_by) : [];
     const options = {includeFighterInfo: rawOptions.includes('includeFighterInfo'), includeEventInfo: rawOptions.includes('includeEventInfo'),};
 
-    const fights = await getFights(filters, options);
+    const fights = await getFights(filters, sorting, options);
     return res.status(200).json(fights);
   } catch (error) {
     console.log(error);

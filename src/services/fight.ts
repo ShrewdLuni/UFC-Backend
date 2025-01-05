@@ -3,10 +3,12 @@ import { QueryBuilder } from "../queryBuilder"
 import { FightSerializer } from "../serializers/fight"
 import { Fight } from "../types/types"
 
-export const getFights = async (filters : string | string[], options: {includeFighterInfo: boolean, includeEventInfo: boolean}) => {
+export const getFights = async (filters : string | string[], sort_by : { field: string; direction: "ASC" | "DESC"; }[], options: {includeFighterInfo: boolean, includeEventInfo: boolean}) => {
   const queryBuilder = new QueryBuilder('fight');
 
   queryBuilder.select('fight.*').where(filters);
+  for(let item of sort_by)
+    queryBuilder.order(item.field, item.direction)
 
   if (options.includeFighterInfo) {
     queryBuilder
